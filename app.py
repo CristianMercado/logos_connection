@@ -60,7 +60,7 @@ def login():
                 flash('¡Usuario Ya Registrado!')
                 return redirect(url_for('login'))
             else:
-                return redirect(url_for('register1'))
+                return redirect(url_for('advice'))
         else:
             cursor = db.database.cursor()
             sql = 'SELECT idUsers, user, userPassword FROM users WHERE user = (%s) AND userPassword = (%s)'
@@ -76,6 +76,10 @@ def login():
                 return redirect(url_for('login'))
 
     return render_template('login.html')
+
+@app.route('/advice')
+def advice():
+    return render_template('advice.html')
 
 @app.route('/register1', methods=['GET', 'POST'])
 def register1():
@@ -298,6 +302,18 @@ def post_details(post_id):
     # Renderizar la plantilla con la publicación y los comentarios
     return render_template('post_details.html', post=post, comments=comments)
 
+
+@app.route('/modify_post/<post_id>', methods=['POST', 'GET'])
+def modify_post(post_id):
+    cursor = db.database.cursor()
+
+    # Obtener la publicación específica
+    cursor.execute('SELECT users.user, title, body, idPosts FROM posts JOIN users ON posts.idUsersP = users.idUsers WHERE posts.idPosts = %s', (post_id,))
+    post = cursor.fetchone()
+
+    # Renderizar la plantilla con la publicación y los comentarios
+    return render_template('modify_posts.html', post=post)
+
 @app.route('/add_comment/<post_id>', methods=['POST'])
 def add_comment(post_id):
     # Verificar si el usuario ha iniciado sesión
@@ -313,7 +329,6 @@ def add_comment(post_id):
         sql = "INSERT INTO comments (idPostsC, idUsersC, comment,date) VALUES (%s, %s, %s,now())"
         cursor.execute(sql, (post_id, session['idUser'], comentario))
         db.database.commit()
-        flash('Comentario añadido correctamente.')
     else:
         flash('El comentario no puede estar vacío.')
     
@@ -341,7 +356,7 @@ def inicio():
 
     # Consulta de las últimas publicaciones del usuario
     sql_posts = '''
-        SELECT title, body, date, nlp_result 
+        SELECT idPosts, title, body, date, nlp_result
         FROM posts 
         WHERE idUsersP = (%s)
         ORDER BY date DESC 
