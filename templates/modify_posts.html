@@ -1,0 +1,30 @@
+{% extends './layout.html' %}
+{% block css%}<link rel="stylesheet" href="{{ url_for('static', filename='css/modify_posts.css')}}">{% endblock %}
+{% block body %}
+    <header>
+        <div class="navigation">
+            <ul class="menu">
+                <li class="menu-item"><a href="{{ url_for('inicio') }}">Inicio</a></li>
+                <li class="menu-item"><a href="{{ url_for('escuelas_filo') }}">Escuelas Filosóficas</a></li>
+                <li class="menu-item"><a href="{{ url_for('forum') }}">Foro</a></li>
+                <li class="menu-item"><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
+            </ul>
+        </div>
+    </header>
+
+    
+    <!-- Formulario para agregar un comentario -->
+    <div class="forum-container">
+        <div class="post">
+            <h2>{{ post[1] }}</h2>
+            <p>{{ post[2] }}</p>
+            <p>Este comentario es: {{post[4]}}</p>
+            <small>Publicado por {{ post[0] }} el {{ post[3] }}</small>
+        </div>
+        <div class="buttons">
+            <a href="{{ url_for('edit_post', post_id=post[3]) }}" class="edit">Editar</a>
+            <a href="{{ url_for('delete_post', post_id=post[3]) }}" class="delete">Borrar</a>
+            <a href="{{ url_for('inicio') }}" class="go_back">Regresar</a>
+        </div>
+    </div>       
+{% endblock %}
